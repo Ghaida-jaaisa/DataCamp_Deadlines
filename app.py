@@ -160,7 +160,7 @@ try:
         # We add a separate annotation for the label
         fig.add_annotation(
             x=today_naive,
-            y=1.25,  # Position it slightly above the top
+            y=1.08,  # Position it slightly above the top
             yref="paper",
             text="Today",
             showarrow=False,
