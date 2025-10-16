@@ -136,7 +136,7 @@ try:
 
         fig = px.timeline(
             filtered_df,
-            title="",
+            title=" ",
             x_start="start_time",
             x_end="end_time",
             y="course",
