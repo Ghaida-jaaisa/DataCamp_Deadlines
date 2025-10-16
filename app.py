@@ -149,7 +149,7 @@ try:
             labels={"hover_text": "Track"}
         )
 
-        fig.add_vline(x=1, line_width=2, line_dash="dash", line_color="red",
+        fig.add_vline(x=1760653818573579000, line_width=2, line_dash="dash", line_color="red",
                       annotation_text="Today", annotation_position="top")
 
         fig.update_yaxes(autorange="reversed")
