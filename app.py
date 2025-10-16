@@ -160,11 +160,11 @@ try:
         # We add a separate annotation for the label
         fig.add_annotation(
             x=today_naive,
-            y=1.05,  # Position it slightly above the top
+            y=1.25,  # Position it slightly above the top
             yref="paper",
             text="Today",
             showarrow=False,
-            font=dict(color="Red", size=14)
+            font=dict(color="white", size=14)
         )
 
         fig.update_yaxes(autorange="reversed")
