@@ -151,7 +151,7 @@ try:
             labels={"hover_text": "Track"}
         )
 
-        today = pd.Timestamp.now().tz_localize(None)
+        today = pd.Timestamp.now().tz_localize(None) + pd.Timedelta(hours=3)
         fig.add_shape(
             type="line",
             x0=today, x1=today,
