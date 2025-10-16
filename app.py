@@ -149,8 +149,23 @@ try:
             labels={"hover_text": "Track"}
         )
 
-        fig.add_vline(x=1, line_width=2, line_dash="dash", line_color="red",
-                      annotation_text="Today", annotation_position="top")
+        # We draw a line shape from the bottom to the top of the chart at today's date
+        fig.add_shape(
+            type="line",
+            x0=today_naive, x1=today_naive,  # The x-coordinates are today's date
+            y0=0, y1=1,  # The y-coordinates span the entire plot height
+            yref="paper",  # Use 'paper' coordinates for y-axis
+            line=dict(color="Red", width=2, dash="dash")
+        )
+        # We add a separate annotation for the label
+        fig.add_annotation(
+            x=today_naive,
+            y=1.05,  # Position it slightly above the top
+            yref="paper",
+            text="Today",
+            showarrow=False,
+            font=dict(color="Red", size=14)
+        )
 
         fig.update_yaxes(autorange="reversed")
         fig.update_layout(
