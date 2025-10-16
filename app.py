@@ -70,7 +70,7 @@ st.markdown("### A visual guide to our program schedule and deadlines.")
 # --- DATA LOADING AND PREPARATION ---
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1DLS_qkd22eoASDaQTDke2q5K4Jhp4ZTxllr_icbj_Hg/export?format=csv&gid=531384324#gid=531384324"
 
-@st.cache_data
+@st.cache_data(ttl=600)
 def load_data(url):
     """Load and preprocess data from Google Sheets."""
     df = pd.read_csv(url)
@@ -121,6 +121,10 @@ try:
         options=all_tracks,
         default=all_tracks
     )
+
+    if st.sidebar.button("🔄 Refresh Data"):
+        st.cache_data.clear()
+        st.rerun()
 
     if not selected_tracks:
         st.warning("Please select at least one track from the sidebar to display the timeline.")
