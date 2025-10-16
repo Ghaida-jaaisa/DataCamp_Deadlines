@@ -98,6 +98,21 @@ try:
     df['emoji'] = df['track'].map(TRACK_EMOJIS).fillna("🔹")
     df['hover_text'] = df['emoji'] + " " + df['track']
 
+    # --- DEBUGGING OUTPUT AS YOU SUGGESTED ---
+    st.subheader("🕵️ Debugging Information")
+    program_start_date = df['start_time'].min()
+    program_end_date = df['end_time'].max()
+    # Create a timezone-NAIVE timestamp for today for a fair comparison
+    today_naive = pd.Timestamp.now().tz_localize(None)
+
+    st.write(f"**Program Start Date:** `{program_start_date}`")
+    st.write(f"**Program End Date:** `{program_end_date}`")
+    st.write(f"**'Today' (Timezone-Naive):** `{today_naive}`")
+    is_within_range = program_start_date <= today_naive <= program_end_date
+    st.write(f"**Is 'Today' within the program's date range?** `{is_within_range}`")
+    st.write("---")
+
+
     # --- SIDEBAR FILTERS ---
     st.sidebar.header("Filter Options")
     all_tracks = sorted(df["track"].unique().tolist())
