@@ -1,17 +1,87 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from datetime import datetime
+from PIL import Image
+import base64
+from io import BytesIO
 
-# Set the page to a wide layout for a better timeline view
-st.set_page_config(layout="wide")
+# --- PAGE CONFIGURATION ---
+st.set_page_config(
+    page_title="Course Timeline",
+    page_icon="🗓️",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
-st.title("Interactive Course Timeline")
-st.markdown("This timeline visualizes our course schedule. Use the sidebar to filter by track.")
 
-# --- GOOGLE SHEETS CONNECTION ---
+# --- HELPER FUNCTION TO MANAGE IMAGES ---
+def image_to_base64(img):
+    buffered = BytesIO()
+    img.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode()
+
+
+# --- HEADER WITH LOGOS ---
+st.markdown("""
+<style>
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    gap: 2rem; 
+}
+.logo-img {
+    max-height: 60px; 
+    padding: 8px; 
+    background-color: #FFFFFF; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+}
+</style>
+""", unsafe_allow_html=True)
+
+col1, col2, col3, col4 = st.columns(4)
+with col1:
+    st.image("bzu.png", use_column_width=True)
+with col2:
+    st.image("gsg.png", use_column_width=True)
+with col3:
+    st.image("gdg.png", use_column_width=True)
+with col4:
+    st.image("dc.png", use_column_width=True)
+
+st.title("🗓️ Datcamp Course Timeline")
+st.markdown("### A visual guide to our program schedule and deadlines.")
+
+# --- DATA LOADING AND PREPARATION ---
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1DLS_qkd22eoASDaQTDke2q5K4Jhp4ZTxllr_icbj_Hg/export?format=csv&gid=531384324#gid=531384324"
 
-# --- COLOR MAPPING ---
+@st.cache_data
+def load_data(url):
+    """Load and preprocess data from Google Sheets."""
+    df = pd.read_csv(url)
+    # Sanitize column names
+    df.columns = df.columns.str.strip().str.lower().str.replace('#', 'num', regex=False).str.replace(' ', '_',regex=False)
+    # Convert dates
+    df["start_time"] = pd.to_datetime(df["start_time"], dayfirst=True)
+    df["end_time"] = pd.to_datetime(df["end_time"], dayfirst=True)
+    return df
+
+
+# --- EMOJI AND COLOR MAPPING ---
+TRACK_EMOJIS = {
+    "Data Theory": "🧠",
+    "Google Sheets": "📊",
+    "Python": "🐍",
+    "Shell": "💻",
+    "Git/Github": "🐙",
+    "SQL": "🔍",
+    "Docker": "🐳",
+    "Certificates": "🏆"
+}
+
 TRACK_COLORS = {
     "Data Theory": "#ea4335",
     "Google Sheets": "#34a853",
@@ -23,42 +93,28 @@ TRACK_COLORS = {
     "Certificates": "#8fbc8f"
 }
 
-
-@st.cache_data
-def load_data(url):
-    """Loads data from Google Sheet and preprocesses it."""
-    df = pd.read_csv(url)
-    # Sanitize column names to prevent issues with spaces or special characters
-    df.columns = df.columns.str.strip().str.lower().str.replace('#', 'num', regex=False).str.replace(' ', '_',
-                                                                                                     regex=False)
-    # Convert date columns to datetime objects, crucial for Plotly
-    df["start_time"] = pd.to_datetime(df["start_time"], dayfirst=True)
-    df["end_time"] = pd.to_datetime(df["end_time"], dayfirst=True)
-    return df
-
-
 try:
     df = load_data(SHEET_URL)
+    df['emoji'] = df['track'].map(TRACK_EMOJIS).fillna("🔹")
+    df['hover_text'] = df['emoji'] + " " + df['track']
 
-    # --- Sidebar Filters ---
+    # --- SIDEBAR FILTERS ---
     st.sidebar.header("Filter Options")
     all_tracks = sorted(df["track"].unique().tolist())
-
     selected_tracks = st.sidebar.multiselect(
         "Select Tracks to Display:",
         options=all_tracks,
-        default=all_tracks  # By default, show all tracks
+        default=all_tracks
     )
 
     if not selected_tracks:
-        st.warning("Please select at least one track from the sidebar.")
+        st.warning("Please select at least one track from the sidebar to display the timeline.")
     else:
         filtered_df = df[df["track"].isin(selected_tracks)].copy()
 
-        # --- Gantt Chart Visualization ---
+        # --- GANTT CHART VISUALIZATION ---
         st.header("Course Schedule Gantt Chart")
 
-        # Create the Gantt chart
         fig = px.timeline(
             filtered_df,
             x_start="start_time",
@@ -67,25 +123,45 @@ try:
             color="track",
             color_discrete_map=TRACK_COLORS,
             hover_name="course",
-            title="Course Progress and Deadlines"
+            hover_data={
+                'track': False,
+                'hover_text': True,
+                'start_time': '|%B %d, %Y',
+                'end_time': '|%B %d, %Y'
+            },
+            labels={"hover_text": "Track"}
         )
 
-        # Improve the chart's layout for better readability
+        fig.add_vline(x=datetime.now(), line_width=2, line_dash="dash", line_color="red",
+                      annotation_text="Today", annotation_position="top")
+
         fig.update_yaxes(autorange="reversed")
         fig.update_layout(
             title_font_size=24,
             font_size=16,
-            xaxis_title="Date",
-            yaxis_title="Course",
-            legend_title="Track"
+            xaxis_title=None,
+            yaxis_title=None,
+            legend_title="Course Tracks"
         )
-
         st.plotly_chart(fig, use_container_width=True)
 
-        # --- Display Data Table ---
-        st.header("Course Data")
-        st.dataframe(filtered_df)
+        # --- DATA TABLE DISPLAY ---
+        st.header("Course Details & Links")
+        st.dataframe(
+            filtered_df,
+            column_config={
+                "course": st.column_config.TextColumn("Course Title", width="large"),
+                "track": "Track",
+                "num_hours": "Hours",
+                "start_time": st.column_config.DateColumn("Start Date", format="YYYY-MM-DD"),
+                "end_time": st.column_config.DateColumn("End Date", format="YYYY-MM-DD"),
+                "link_to_course": st.column_config.LinkColumn("Course Link", display_text="🔗 Go to Course"),
+                "num_days": None,
+            },
+            hide_index=True,
+            use_container_width=True
+        )
 
 except Exception as e:
-    st.error(f"Failed to load or process data: {e}")
-    st.info("Please ensure your Google Sheet URL is correct and public.")
+    st.error(f"⚠️ An error occurred: {e}")
+    st.info("Please check with the moderators.")
