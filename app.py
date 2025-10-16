@@ -16,41 +16,54 @@ st.set_page_config(
 
 
 # --- HELPER FUNCTION TO MANAGE IMAGES ---
-def image_to_base64(img):
-    buffered = BytesIO()
-    img.save(buffered, format="PNG")
-    return base64.b64encode(buffered.getvalue()).decode()
+def image_to_base64(path):
+    """Converts a local image file to a Base64 string for embedding in HTML."""
+    try:
+        img = Image.open(path)
+        buffered = BytesIO()
+        img.save(buffered, format="PNG")
+        return f"data:image/png;base64,{base64.b64encode(buffered.getvalue()).decode()}"
+    except FileNotFoundError:
+        return None
 
+# --- HEADER WITH EMBEDDED LOGOS ---
+try:
+    # Convert all logos to Base64
+    bzu_logo_b64 = image_to_base64("bzu.png")
+    gsg_logo_b64 = image_to_base64("gsg.png")
+    gdg_logo_b64 = image_to_base64("gdg.png")
+    dc_logo_b64 = image_to_base64("dc.png")
 
-# --- HEADER WITH LOGOS ---
-st.markdown("""
-<style>
-.logo-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-    gap: 2rem; 
-}
-.logo-img {
-    max-height: 60px; 
-    padding: 8px; 
-    background-color: #FFFFFF; 
-    border-radius: 10px; 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-}
-</style>
-""", unsafe_allow_html=True)
+    # Define the HTML and CSS for the logo bar
+    logo_html = f"""
+    <style>
+        .logo-container {{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem 0;
+            gap: 2rem; 
+            flex-wrap: wrap; 
+        }}
+        .logo-img {{
+            max-height: 55px; 
+            padding: 8px;
+            background-color: #FFFFFF; 
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }}
+    </style>
+    <div class="logo-container">
+        <img src="{bzu_logo_b64}" class="logo-img">
+        <img src="{gsg_logo_b64}" class="logo-img">
+        <img src="{gdg_logo_b64}" class="logo-img">
+        <img src="{dc_logo_b64}" class="logo-img">
+    </div>
+    """
+    st.markdown(logo_html, unsafe_allow_html=True)
 
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    st.image("bzu.png", use_column_width=True)
-with col2:
-    st.image("gsg.png", use_column_width=True)
-with col3:
-    st.image("gdg.png", use_column_width=True)
-with col4:
-    st.image("dc.png", use_column_width=True)
+except Exception as e:
+    st.error(f"An error occurred while loading the logos: {e}")
 
 st.title("🗓️ Datcamp Course Timeline")
 st.markdown("### A visual guide to our program schedule and deadlines.")
@@ -98,21 +111,7 @@ try:
     df['emoji'] = df['track'].map(TRACK_EMOJIS).fillna("🔹")
     df['hover_text'] = df['emoji'] + " " + df['track']
 
-    # --- DEBUGGING OUTPUT AS YOU SUGGESTED ---
-    st.subheader("🕵️ Debugging Information")
-    program_start_date = df['start_time'].min()
-    program_end_date = df['end_time'].max()
-    # Create a timezone-NAIVE timestamp for today for a fair comparison
-    today_naive = pd.Timestamp.now().tz_localize(None)
-    tsvalue = pd.Timestamp.now().value
 
-    st.write(f"**Program Start Date:** `{program_start_date}`")
-    st.write(f"**Program End Date:** `{program_end_date}`")
-    st.write(f"**'Today' (Timezone-Naive):** `{today_naive}`")
-    st.write(f"**'Today' Timestamp Value:** `{tsvalue}`")
-    is_within_range = program_start_date <= today_naive <= program_end_date
-    st.write(f"**Is 'Today' within the program's date range?** `{is_within_range}`")
-    st.write("---")
 
 
     # --- SIDEBAR FILTERS ---
@@ -149,18 +148,18 @@ try:
             labels={"hover_text": "Track"}
         )
 
-        # We draw a line shape from the bottom to the top of the chart at today's date
+        today = pd.Timestamp.now().tz_localize(None)
         fig.add_shape(
             type="line",
-            x0=today_naive, x1=today_naive,  # The x-coordinates are today's date
-            y0=0, y1=1,  # The y-coordinates span the entire plot height
-            yref="paper",  # Use 'paper' coordinates for y-axis
+            x0=today, x1=today,
+            y0=0, y1=1,
+            yref="paper",
             line=dict(color="Red", width=2, dash="dash")
         )
-        # We add a separate annotation for the label
+
         fig.add_annotation(
-            x=today_naive,
-            y=1.08,  # Position it slightly above the top
+            x=today,
+            y=1.08,
             yref="paper",
             text="Today",
             showarrow=False,
@@ -187,8 +186,10 @@ try:
                 "num_hours": "Hours",
                 "start_time": st.column_config.DateColumn("Start Date", format="YYYY-MM-DD"),
                 "end_time": st.column_config.DateColumn("End Date", format="YYYY-MM-DD"),
-                "link_to_course": st.column_config.LinkColumn("Course Link", display_text="🔗 Go to Course"),
+                "course_link": st.column_config.LinkColumn("Course Link", display_text="🔗 Go to Course"),
                 "num_days": None,
+                "emoji": None,
+                "hover_text": None
             },
             hide_index=True,
             use_container_width=True
