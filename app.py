@@ -46,7 +46,7 @@ try:
             flex-wrap: wrap; 
         }}
         .logo-img {{
-            max-height: 55px; 
+            max-height: 70px; 
             padding: 8px;
             background-color: #FFFFFF; 
             border-radius: 10px;
