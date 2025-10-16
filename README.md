@@ -1,4 +1,4 @@
-# 🚀 Interactive Course Schedule & Deadline Tracker
+# 🚀 Interactive Course Schedule & Deadline Tracker 
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://bzudatacampdeadlines.streamlit.app/)
 
