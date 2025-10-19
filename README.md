@@ -55,7 +55,8 @@ Built with ❤️ using:
 
 ## Note
 ``
-This project is based on an existing template created by Rasheed-Al-Qobbaj .  
-It has been modified and optimized by me for academic purposes at Arab American University.
+This project is based on an existing template created by **Rasheed-Al-Qobbaj** .  
+
+It has been modified and customized by me for academic purposes at **Arab American University**.
 ``
 
