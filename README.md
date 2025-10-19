@@ -4,7 +4,7 @@
 
 A dynamic, real-time timeline built to keep students organized and on track. Powered by Google Sheets and visualized with Streamlit & Plotly.
 
-![Dashboard Screenshot](Screenshot.png)
+![Dashboard Screenshot](./Screenshot.png)
 
 ## ✨ Why this is awesome
 
