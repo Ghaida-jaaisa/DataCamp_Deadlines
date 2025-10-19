@@ -28,10 +28,11 @@ def image_to_base64(path):
 # --- HEADER WITH EMBEDDED LOGOS ---
 try:
     # Convert all logos to Base64
-    bzu_logo_b64 = image_to_base64("bzu.png")
+    aaup_logo_b64 = image_to_base64("aaup.png")
     gsg_logo_b64 = image_to_base64("gsg.png")
-    gdg_logo_b64 = image_to_base64("gdg.png")
-    dc_logo_b64 = image_to_base64("dc.png")
+    ieee_logo_b64 = image_to_base64("ieee.png")
+    dc_logo_b64 = image_to_base64("datacamp.jpg")
+
 
     # Define the HTML and CSS for the logo bar
     logo_html = f"""
@@ -45,7 +46,7 @@ try:
             flex-wrap: wrap; 
         }}
         .logo-img {{
-            max-height: 70px; 
+            max-height: 100px; 
             padding: 8px;
             background-color: #FFFFFF; 
             border-radius: 10px;
@@ -53,10 +54,11 @@ try:
         }}
     </style>
     <div class="logo-container">
-        <img src="{bzu_logo_b64}" class="logo-img">
+        <img src="{aaup_logo_b64}" class="logo-img">
         <img src="{gsg_logo_b64}" class="logo-img">
-        <img src="{gdg_logo_b64}" class="logo-img">
+        <img src="{ieee_logo_b64}" class="logo-img">
         <img src="{dc_logo_b64}" class="logo-img">
+
     </div>
     """
     st.markdown(logo_html, unsafe_allow_html=True)
@@ -68,7 +70,7 @@ st.title("🗓️ Datcamp Course Timeline")
 st.markdown("### A visual guide to our program schedule and deadlines.")
 
 # --- DATA LOADING AND PREPARATION ---
-SHEET_URL = "https://docs.google.com/spreadsheets/d/1DLS_qkd22eoASDaQTDke2q5K4Jhp4ZTxllr_icbj_Hg/export?format=csv&gid=531384324#gid=531384324"
+SHEET_URL = "https://docs.google.com/spreadsheets/d/1li7c_7VY1TTJc5q6yS06kmzHRMVgSraAWLI8BbNBWDY/export?format=csv&gid=531384324#gid=531384324"
 
 @st.cache_data(ttl=600)
 def load_data(url):

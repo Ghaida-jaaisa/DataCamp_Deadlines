@@ -1,10 +1,10 @@
 # 🚀 Interactive Course Schedule & Deadline Tracker 
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://bzudatacampdeadlines.streamlit.app/)
+<!-- [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://bzudatacampdeadlines.streamlit.app/) -->
 
 A dynamic, real-time timeline built to keep students organized and on track. Powered by Google Sheets and visualized with Streamlit & Plotly.
 
-![Dashboard Screenshot](screenshot.png)
+![Dashboard Screenshot](Screenshot.png)
 
 ## ✨ Why this is awesome
 
