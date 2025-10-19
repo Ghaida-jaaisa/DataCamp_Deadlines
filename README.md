@@ -4,8 +4,6 @@
 
 A dynamic, real-time timeline built to keep students organized and on track. Powered by Google Sheets and visualized with Streamlit & Plotly.
 
-![Dashboard Screenshot](Screenshot.png)
-
 ## ✨ Why this is awesome
 
 Forget static PDFs. This dashboard offers a live view of the entire program schedule.
