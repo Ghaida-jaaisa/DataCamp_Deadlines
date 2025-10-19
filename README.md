@@ -53,3 +53,11 @@ Built with ❤️ using:
 *   [Streamlit](https://streamlit.io/)
 *   [Plotly Express](https://plotly.com/python/plotly-express/)
 *   [Pandas](https://pandas.pydata.org/)
+
+
+## Note
+``
+This project is based on an existing template created by Rasheed-Al-Qobbaj .  
+It has been modified and optimized by me for academic purposes at Arab American University.
+``
+
