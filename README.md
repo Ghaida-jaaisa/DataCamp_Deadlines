@@ -20,7 +20,7 @@ Get it running on your machine in under a minute.
 
 1.  **Clone & Enter:**
     ```bash
-    git clone https://github.com/your-username/your-repo-name.git
+    git clone https://github.com/Ghaida-jaaisa/DataCamp_Deadlines.git
     cd your-repo-name
     ```
 
